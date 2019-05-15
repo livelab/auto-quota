@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"path/filepath"
 
 	apiv1 "k8s.io/api/core/v1"
@@ -10,9 +9,11 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
+	log "k8s.io/klog"
 )
 
 func main() {
+	log.InitFlags(nil)
 	var kc *string
 	if home := homedir.HomeDir(); home != "" {
 		kc = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "optional absolute path to the kubeconfig file")
@@ -38,7 +39,7 @@ func main() {
 		panic(err)
 	}
 	for _, po := range pods.Items {
-		fmt.Printf("%s, %s, %s\n", po.GetName(), po.Spec.NodeName, po.Spec.Containers)
+		log.Infoln("%s, %s, %s\n", po.GetName(), po.Spec.NodeName, po.Spec.Containers)
 	}
-
+	log.Flush()
 }
