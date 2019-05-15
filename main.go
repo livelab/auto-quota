@@ -2,9 +2,11 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"path/filepath"
 
 	apiv1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
@@ -31,5 +33,12 @@ func main() {
 	}
 
 	podsClient := clientset.CoreV1().Pods(apiv1.NamespaceDefault)
-	_ = podsClient
+	pods, err := podsClient.List(metav1.ListOptions{})
+	if err != nil {
+		panic(err)
+	}
+	for _, po := range pods.Items {
+		fmt.Printf("%s, %s, %s\n", po.GetName(), po.Spec.NodeName, po.Spec.Containers)
+	}
+
 }
