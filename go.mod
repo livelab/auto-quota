@@ -12,7 +12,7 @@ require (
 	github.com/alexflint/go-arg v1.0.0 // indirect
 	github.com/alexkohler/nakedret v0.0.0-20190321114339-98ae56e4e0f3 // indirect
 	github.com/client9/misspell v0.3.4 // indirect
-	github.com/coreos/etcd v3.3.10+incompatible
+	github.com/coreos/etcd v3.3.10+incompatible // indirect
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/davidrjenni/reftools v0.0.0-20190411195930-981bbac422f8 // indirect
 	github.com/docker/spdystream v0.0.0-20160310174837-449fdfce4d96 // indirect

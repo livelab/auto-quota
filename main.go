@@ -6,6 +6,7 @@ import (
 	"time"
 
 	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
@@ -14,6 +15,10 @@ import (
 	"k8s.io/client-go/util/homedir"
 	log "k8s.io/klog"
 )
+
+const NS = "auto-ns-test"
+
+var clientset *kubernetes.Clientset
 
 func main() {
 	log.InitFlags(nil)
@@ -31,7 +36,7 @@ func main() {
 		panic(err)
 	}
 
-	clientset, err := kubernetes.NewForConfig(config)
+	clientset, err = kubernetes.NewForConfig(config)
 	if err != nil {
 		panic(err)
 	}
@@ -69,4 +74,21 @@ func main() {
 func nsCreated(obj interface{}) {
 	ns := obj.(*v1.Namespace)
 	log.Infoln("Namespace created:", ns.GetName())
+	if ns.GetName() == NS {
+		log.Infoln("Create ResourceQuota for ", NS)
+		rqClient := clientset.CoreV1().ResourceQuotas(NS)
+		rqSpec := &v1.ResourceQuota{}
+		rqSpec.SetName("compute-resource-quota")
+		rqSpec.Spec = v1.ResourceQuotaSpec{
+			Hard: v1.ResourceList{
+				v1.ResourceCPU:    resource.MustParse("100000"),
+				v1.ResourceMemory: resource.MustParse("1Pi"),
+				"limits.cpu":      resource.MustParse("100000"),
+				"limits.memory":   resource.MustParse("1Pi"),
+				"requests.cpu":    resource.MustParse("100000"),
+				"requests.memory": resource.MustParse("1Pi"),
+			},
+		}
+		rqClient.Create(rqSpec)
+	}
 }
